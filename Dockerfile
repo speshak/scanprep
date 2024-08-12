@@ -1,4 +1,4 @@
-FROM python:3.9-bullseye
+FROM python:3.9-slim-bullseye
 
 LABEL org.opencontainers.image.documentation="https://github.com/baltpeter/scanprep"
 LABEL org.opencontainers.image.source="https://github.com/baltpeter/scanprep"
@@ -16,10 +16,16 @@ RUN apt-get update && \
     libpng-dev \
     libtiff-dev \
     libzbar0 \
-    mupdf
+    mupdf && \
+  pip3 install --no-cache-dir -r requirements.txt && \
+  mkdir /input /output && \
+  apt-get remove -y \
+    libfreetype-dev \
+    libjpeg-dev \
+    libmupdf-dev \
+    libpng-dev \
+    libtiff-dev
 
-RUN pip3 install --no-cache-dir -r requirements.txt && \
-  mkdir /input /output
 
 # Cleanup apt
 RUN apt-get clean autoclean && \
@@ -27,4 +33,4 @@ RUN apt-get clean autoclean && \
   rm -rf /var/lib/{apt,dpkg,cache,log}/
 
 VOLUME ["/input", "/output"]
-ENTRYPOINT ./docker-entrypoint.sh
+ENTRYPOINT ["./docker-entrypoint.sh"]
